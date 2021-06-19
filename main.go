@@ -27,8 +27,8 @@ type opts struct {
 	Domain     string  `required:"true" short:"d" long:"domain" description:"domain of your account (tenant)"`
 	User       string  `required:"true" short:"u" long:"user" description:"user id of your account"`
 	Password   string  `required:"true" short:"p" long:"password" description:"password of your account"`
-	Action     string  `required:"true" short:"a" long:"action" choice:"checkin" choice:"checkout" description:"desired action"`
-	WebhookURL *string `required:"false" short:"h" long:"webhook" description:"[option] webhook url for reporting action result"`
+	Action     string  `required:"true" short:"a" long:"action" choice:"checkin" choice:"checkout" description:"action to be performed"`
+	WebhookURL *string `required:"false" short:"w" long:"webhook" description:"[option] webhook url for reporting action result"`
 }
 
 func exit(code int, msg string, webhookURL *string) {

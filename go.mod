@@ -1,4 +1,4 @@
-module automate-minagine
+module minagine-cli
 
 go 1.16
 

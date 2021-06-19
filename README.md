@@ -1,24 +1,26 @@
-# automate-minagine
+# minagine-cli
 
 A CLI tool for dakoku MINAGINE
 
 ## build
+
 ```
-$ go build -o automate-minagine
+$ go build -o minagine-cli
 ```
 
 ## usage
+
 ```
-$ automate-minagine -h
+$ minagine-cli -h
 Usage:
-  automate-minagine [OPTIONS]
+  minagine-cli [OPTIONS]
 
 Application Options:
   -d, --domain=                   domain of your account (tenant)
   -u, --user=                     user id of your account
   -p, --password=                 password of your account
-  -a, --action=[checkin|checkout] desired action
-  -h, --webhook=                  [option] webhook url for reporting action result
+  -a, --action=[checkin|checkout] action to be performed
+  -w, --webhook=                  [option] webhook url for reporting action result
 
 Help Options:
   -h, --help                      Show this help message

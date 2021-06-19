@@ -4,8 +4,8 @@ run:
 
 .PHONY: build
 build:
-	go build -o automate-minagine .
+	go build -o minagine-cli .
 
 .PHONY: dockerize
 dockerize:
-	docker build -t automate-minagine .
+	docker build -t minagine-cli .

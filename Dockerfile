@@ -8,7 +8,7 @@ WORKDIR /build
 COPY go.* ./
 RUN go mod download
 COPY . .
-RUN go build -o automate-minagine
+RUN go build -o minagine-cli
 
 
 FROM alpine:3.14.0
@@ -18,6 +18,6 @@ RUN apk add --no-cache tzdata
 
 RUN apk add --no-cache chromium chromium-chromedriver
 
-COPY --from=builder /build/automate-minagine /app/automate-minagine
+COPY --from=builder /build/minagine-cli /app/minagine-cli
 
-CMD /app/automate-minagine
+CMD /app/minagine-cli
