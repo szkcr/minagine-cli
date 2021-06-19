@@ -1,6 +1,10 @@
 .PHONY: run
 run:
-	go run main.go
+	go run .
+
+.PHONY: build
+build:
+	go build -o automate-minagine .
 
 .PHONY: dockerize
 dockerize:
