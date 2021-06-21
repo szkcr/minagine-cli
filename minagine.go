@@ -10,13 +10,16 @@ import (
 )
 
 const (
-	MINAGINE_LOGIN_URL  = "https://tm.minagine.net/index.html"
-	MINAGINE_SHIFT_URL  = "https://tm.minagine.net/work/wrktimemngmntshtself/sht"
-	MINAGINE_DAKOKU_URL = "https://tm.minagine.net/work/wrktimergst"
+	MINAGINE_LOGIN_URL    = "https://tm.minagine.net/index.html"
+	MINAGINE_USERINFO_URL = "https://tm.minagine.net/employ/emplyself"
+	MINAGINE_SHIFT_URL    = "https://tm.minagine.net/work/wrktimemngmntshtself/sht"
+	MINAGINE_DAKOKU_URL   = "https://tm.minagine.net/work/wrktimergst"
 )
 
 func openPage(page *agouti.Page, targetURL string, domain string, user string, pw string) error {
-	page.Navigate(targetURL)
+	if err := page.Navigate(targetURL); err != nil {
+		return err
+	}
 	url, err := page.URL()
 	if err != nil {
 		return err
@@ -37,7 +40,22 @@ func openPage(page *agouti.Page, targetURL string, domain string, user string, p
 			return err
 		}
 
-		page.Navigate(targetURL)
+		// ログインできたことを確認
+		if err := page.Navigate(MINAGINE_USERINFO_URL); err != nil {
+			return err
+		}
+		renderedID, err := page.FindByXPath(`//*[@id="input_area"]/form/div[1]/table[3]/tbody/tr[2]/td/span`).Text()
+		if err != nil {
+			return err
+		}
+		if renderedID != user {
+			return fmt.Errorf("loginID not matched (expected:`%s`, actual:`%s`)", user, renderedID)
+		}
+
+		// 目的のページへ再度移動
+		if err := page.Navigate(targetURL); err != nil {
+			return err
+		}
 		url, err = page.URL()
 		if err != nil {
 			return err
@@ -46,19 +64,6 @@ func openPage(page *agouti.Page, targetURL string, domain string, user string, p
 
 	if url != targetURL {
 		return fmt.Errorf("failed to navigate targetURL: `%s`", targetURL)
-	}
-
-	// ログイン済みのページが正しく開けているか確認する
-	if err := page.FindByXPath(`//*[@id="show_popup_info"]`).MouseToElement(); err != nil {
-		return err
-	}
-	text, err := page.FindByXPath(`//*[@id="login_information"]/ul/li[1]/div[1]`).Text()
-	if err != nil {
-		return err
-	}
-	renderedID := strings.TrimSpace(strings.SplitN(text, `|`, 2)[1])
-	if renderedID != user {
-		return fmt.Errorf("loginID not matched (expected:`%s`, actual:`%s`)", user, renderedID)
 	}
 
 	return nil
@@ -96,16 +101,16 @@ func dakoku(page *agouti.Page, domain string, user string, pw string, starting b
 	return strings.ReplaceAll(strings.TrimSpace(latestAction), "\t", " "), nil
 }
 
-func isWorkingDay(page *agouti.Page, domain string, user string, pw string, today time.Time) (bool, error) {
+func isWorkingDay(page *agouti.Page, domain string, user string, pw string, today time.Time) (bool, string, error) {
 	err := openPage(page, MINAGINE_SHIFT_URL, domain, user, pw)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
 	rows := page.AllByXPath(`//*[@id="table_wrktimesht"]/tbody/tr`)
 	numOfRow, err := rows.Count()
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
 	// 最初の4行はヘッダのためスキップ
@@ -113,17 +118,18 @@ func isWorkingDay(page *agouti.Page, domain string, user string, pw string, toda
 		// `日`列をチェックして対象日との一致をチェック
 		day, err := rows.At(i).FindByXPath(`td[1]`).Text()
 		if err != nil {
-			return false, err
+			return false, "", err
 		}
 		if strconv.Itoa(today.Day()) == strings.TrimSpace(day) {
 			// 出勤予定(`○`)かどうかをチェック
 			status, err := rows.At(i).FindByXPath(`td[3]`).Text()
 			if err != nil {
-				return false, err
+				return false, "", err
 			}
-			return strings.TrimSpace(status) == "○", nil
+			trimmed := strings.TrimSpace(status)
+			return trimmed == "○", trimmed, nil
 		}
 	}
 
-	return false, fmt.Errorf("could not find date in shift table")
+	return false, "", fmt.Errorf("could not find date in shift table")
 }

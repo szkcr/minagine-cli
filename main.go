@@ -61,12 +61,12 @@ func main() {
 	// 出勤予定日かチェックする
 	if !opts.Force {
 		today := time.Now()
-		isWorkingDay, err := isWorkingDay(page, domain, user, pw, today)
+		isWorkingDay, status, err := isWorkingDay(page, domain, user, pw, today)
 		if err != nil {
 			exit(1, fmt.Sprintf("failed to check working day: %v", err), opts.WebhookURL)
 		}
 		if !isWorkingDay {
-			exit(0, fmt.Sprintf("action was skipped (not working day: %s)", today.Format("2006-01-02")), opts.WebhookURL)
+			exit(0, fmt.Sprintf("action was skipped (not working day: %s = %s)", today.Format("2006-01-02"), status), opts.WebhookURL)
 		}
 	}
 
