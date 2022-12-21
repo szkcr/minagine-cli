@@ -1,4 +1,4 @@
-FROM golang:1.16 as builder
+FROM golang:1.19 as builder
 
 ENV CGO_ENABLED=0
 ENV GOOS=linux
@@ -8,10 +8,10 @@ WORKDIR /build
 COPY go.* ./
 RUN go mod download
 COPY . .
-RUN go build -o minagine-cli
+RUN go build -o minagine-cli ./src
 
 
-FROM alpine:3.14.0
+FROM alpine:3.17
 
 ENV TZ=Asia/Tokyo
 RUN apk add --no-cache tzdata
