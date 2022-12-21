@@ -5,7 +5,7 @@ A CLI tool for check-in/check-out MINAGINE
 ## build
 
 ```
-$ go build -o minagine-cli
+$ go build -o minagine-cli ./src
 ```
 
 ## usage
@@ -21,7 +21,6 @@ Application Options:
   -p, --password=                 password of your account
   -a, --action=[checkin|checkout] action to be performed
   -f, --force                     [option] skip pre-check of working day
-  -w, --webhook=                  [option] webhook url for reporting action result
 
 Help Options:
   -h, --help                      Show this help message
