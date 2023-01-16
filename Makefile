@@ -8,4 +8,4 @@ build:
 
 .PHONY: dockerize
 dockerize:
-	docker build -t minagine-cli .
+	docker build -t szkcr/minagine-cli .

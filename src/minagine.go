@@ -44,7 +44,7 @@ func openPage(page *agouti.Page, targetURL string, domain string, user string, p
 		if err := page.Navigate(MINAGINE_USERINFO_URL); err != nil {
 			return err
 		}
-		renderedID, err := page.FindByXPath(`//*[@id="input_area"]/form/div[1]/table[3]/tbody/tr[2]/td/span`).Text()
+		renderedID, err := page.FindByXPath(`//*[@id="input_area"]/form/div[1]/table[3]/tbody/tr[2]/td/span[1]`).Text()
 		if err != nil {
 			return err
 		}
